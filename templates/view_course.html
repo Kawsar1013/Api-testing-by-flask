@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.course_code }} - Resources{% endblock %}
+
+{% block content %}
+<div class="course-detail">
+    <div class="course-header">
+        <h1>{{ course.course_code }} - {{ course.course_name }}</h1>
+    </div>
+    
+    <div class="course-info">
+        <div class="info-group">
+            <h3>Course Information</h3>
+            <p><strong>Course Code:</strong> {{ course.course_code }}</p>
+            <p><strong>Course Name:</strong> {{ course.course_name }}</p>
+            <p><strong>Department:</strong> {{ course.department }}</p>
+            <p><strong>Description:</strong> {{ course.description }}</p>
+        </div>
+    </div>
+    
+    <div class="resources-section">
+        <div class="resources-header">
+            <h2>Course Resources</h2>
+            <a href="{{ url_for('add_resource', course_id=course.id) }}" class="btn">Add Resource</a>
+        </div>
+        
+        {% if resources %}
+        <div class="resources-grid">
+            {% for resource in resources %}
+            <div class="resource-card">
+                <div class="resource-header">
+                    <h3>{{ resource.title }}</h3>
+                    <span class="resource-type">{{ resource.resource_type|title }}</span>
+                </div>
+                {% if resource.description %}
+                <div class="resource-description">
+                    <p>{{ resource.description }}</p>
+                </div>
+                {% endif %}
+                <div class="resource-details">
+                    <p><strong>Type:</strong> {{ resource.resource_type|title }}</p>
+                    {% if resource.file_size %}
+                    <p><strong>Size:</strong> {{ (resource.file_size / 1024)|round(1) }} KB</p>
+                    {% endif %}
+                    <p><strong>Added:</strong> {{ resource.uploaded_at.strftime('%B %d, %Y') }}</p>
+                </div>
+                <div class="resource-actions">
+                    {% if resource.resource_type == 'document' and resource.file_path %}
+                    <a href="{{ url_for('download_resource', resource_id=resource.id) }}" class="btn-small">Download</a>
+                    {% elif resource.external_link %}
+                    <a href="{{ resource.external_link }}" target="_blank" class="btn-small">Open Link</a>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('delete_resource', resource_id=resource.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this resource?')">
+                        <button type="submit" class="btn-small btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-resources">
+            <h3>No Resources Available</h3>
+            <p>No resources have been added to this course yet. <a href="{{ url_for('add_resource', course_id=course.id) }}">Add the first resource</a>!</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="course-actions">
+        <a href="{{ url_for('courses') }}" class="btn btn-secondary">Back to Courses</a>
+    </div>
+</div>
+{% endblock %}

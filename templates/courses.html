@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Course Repository{% endblock %}
+
+{% block content %}
+<div class="courses-header">
+    <h1>Course Repository</h1>
+</div>
+
+<!-- Search Form -->
+<div class="search-section">
+    <form method="GET" action="{{ url_for('courses') }}" class="search-form">
+        <div class="search-input-group">
+            <input type="text" name="search" placeholder="Search courses by code, name, or department..." value="{{ search_query }}" class="search-input">
+            <button type="submit" class="btn">Search</button>
+        </div>
+    </form>
+    {% if search_query %}
+    <p class="search-results">Search results for: "<strong>{{ search_query }}</strong>" - Found {{ courses|length }} course(s)</p>
+    <a href="{{ url_for('courses') }}" class="btn btn-secondary">Clear Search</a>
+    {% endif %}
+</div>
+
+{% if courses %}
+<div class="courses-grid">
+    {% for course in courses %}
+    <div class="course-card">
+        <div class="course-header">
+            <h3>{{ course.course_code }}</h3>
+        </div>
+        <div class="course-details">
+            <h4>{{ course.course_name }}</h4>
+            <p><strong>Department:</strong> {{ course.department }}</p>
+            <p><strong>Resources:</strong> {{ course.resources|length }} items</p>
+        </div>
+        <div class="course-description">
+            <p>{{ course.description[:150] }}{% if course.description|length > 150 %}...{% endif %}</p>
+        </div>
+        <div class="course-actions">
+            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn-small">View Resources</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="no-courses">
+    <h2>No Courses Found</h2>
+    {% if search_query %}
+    <p>No courses match your search criteria. <a href="{{ url_for('courses') }}">View all courses</a>.</p>
+    {% else %}
+    <p>No courses available yet.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="back-link">
+    <a href="{{ url_for('home') }}">← Back to Home</a>
+</div>
+{% endblock %}

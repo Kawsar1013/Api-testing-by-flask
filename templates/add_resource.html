@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Add Resource - {{ course.course_code }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Add Resource to {{ course.course_code }}</h1>
+    
+    <form method="POST" enctype="multipart/form-data" class="resource-form">
+        <div class="form-group">
+            <label for="title">Resource Title:</label>
+            <input type="text" id="title" name="title" placeholder="e.g., Week 1 Lecture Notes" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description (Optional):</label>
+            <textarea id="description" name="description" rows="3" placeholder="Brief description of the resource..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="resource_type">Resource Type:</label>
+            <select id="resource_type" name="resource_type" required>
+                <option value="">Select Resource Type</option>
+                <option value="document">Document (PDF, DOC, etc.)</option>
+                <option value="link">External Link</option>
+                <option value="video">Video</option>
+                <option value="assignment">Assignment</option>
+                <option value="syllabus">Syllabus</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="file-upload-group" style="display: none;">
+            <label for="file">Upload File:</label>
+            <input type="file" id="file" name="file" accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx">
+            <small>Supported formats: PDF, DOC, DOCX, TXT, PPT, PPTX, XLS, XLSX</small>
+        </div>
+        
+        <div class="form-group" id="link-group" style="display: none;">
+            <label for="external_link">External Link:</label>
+            <input type="url" id="external_link" name="external_link" placeholder="https://example.com">
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn">Add Resource</button>
+            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('resource_type').addEventListener('change', function() {
+    const fileGroup = document.getElementById('file-upload-group');
+    const linkGroup = document.getElementById('link-group');
+    const fileInput = document.getElementById('file');
+    const linkInput = document.getElementById('external_link');
+    
+    // Hide all groups first
+    fileGroup.style.display = 'none';
+    linkGroup.style.display = 'none';
+    
+    // Show relevant group based on selection
+    if (this.value === 'document') {
+        fileGroup.style.display = 'block';
+        fileInput.required = true;
+        linkInput.required = false;
+    } else if (this.value === 'link') {
+        linkGroup.style.display = 'block';
+        linkInput.required = true;
+        fileInput.required = false;
+    } else {
+        fileInput.required = false;
+        linkInput.required = false;
+    }
+});
+</script>
+{% endblock %}
